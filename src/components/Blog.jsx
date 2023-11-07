@@ -1,18 +1,18 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const Blog = ({ user, blog, addLike, removeBlog }) => {
   const [visible, setVisible] = useState(false)
 
   const clickLike = () => {
-    const likedBlog = {...blog, likes: blog.likes + 1, user: blog.user.id }
+    const likedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
     addLike(likedBlog)
   }
 
   return (
-    <div>
+    <div className='blog'>
       {blog.title} {blog.author}
       <button onClick={() => setVisible(!visible)}>{visible ? 'hide' : 'view'}</button>
-      <div style={{ display: visible ? '' : 'none'}}>
+      <div style={{ display: visible ? '' : 'none' }} className='urlLikes'>
         <div>{blog.url}</div>
         <div>likes {blog.likes} <button onClick={clickLike}>like</button></div>
         <div>{blog.user.username}</div>
@@ -20,7 +20,7 @@ const Blog = ({ user, blog, addLike, removeBlog }) => {
           <button onClick={() => removeBlog(blog.id)}>remove</button>
         }
       </div>
-    </div>  
+    </div>
   )
 }
 
