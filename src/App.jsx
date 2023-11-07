@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Blog from './components/Blog'
@@ -17,7 +17,6 @@ const App = () => {
   const [message, setMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
 
-  const dispatch = useDispatch()
   const blogFormRef = useRef()
 
   const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
@@ -81,6 +80,7 @@ const App = () => {
 
   const createBlog = async (blogObject) => {
     try {
+      blogFormRef.current.toggleVisibility()
       let returnedBlog = await blogService.create(blogObject)
       returnedBlog.user = { id: returnedBlog.user, username: user.username }
       dispatch(appendBlog(returnedBlog))
@@ -120,18 +120,18 @@ const App = () => {
         <div>
           username
           <input
-            type='text' value={username} name='Username'
+            type='text' value={username} name='Username' id='username'
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
         <div>
           password
           <input
-            type='password' value={password} name='Password'
+            type='password' value={password} name='Password' id='password'
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type='submit'>login</button>
+        <button type='submit' id='login-button'>login</button>
       </form>
     </div>
   )
@@ -146,7 +146,7 @@ const App = () => {
       {user && <div>
         <p>{user.name} logged in</p>
         <button onClick={handleLogout}>logout</button>
-        <Toggleable buttonLabel='create new blog'>
+        <Toggleable buttonLabel='create new blog' ref={blogFormRef}>
           <BlogForm createBlog={createBlog} />
         </Toggleable>
         {sortedBlogs.map(blog =>
