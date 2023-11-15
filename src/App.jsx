@@ -4,6 +4,7 @@ import loginService from './services/login'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Toggleable from './components/Toggleable'
+import Notification from './components/Notification'
 import { useSelector, useDispatch } from 'react-redux'
 import { setMessage, setErrorMessage } from './reducers/notificationReducer'
 
@@ -12,8 +13,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const message = useSelector(state => state.notification.message)
-  const errorMessage = useSelector(state => state.notification.errorMessage)
 
   const dispatch = useDispatch()
 
@@ -35,15 +34,6 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
-
-  if (message || errorMessage) {
-    setTimeout(() => {
-      message ?
-        dispatch(setMessage(''))
-        :
-        dispatch(setErrorMessage(''))
-    }, 5000)
-  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -135,9 +125,7 @@ const App = () => {
   return (
     <div>
       <h2>{user ? 'blogs' : 'log in'}</h2>
-      <div style={message ? { color: 'green' } : { color: 'red' }} className='notification'>
-        {message ? message : errorMessage}
-      </div>
+      <Notification />
       {!user && loginForm()}
       {user && <div>
         <p>{user.name} logged in</p>
