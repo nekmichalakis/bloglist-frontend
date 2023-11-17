@@ -3,8 +3,9 @@ import { setMessage, setErrorMessage } from '../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import loginService from '../services/login'
 import blogService from '../services/blogs'
+import { setCurrentUser } from '../reducers/userReducer'
 
-const LoginForm = ({ setUser }) => {
+const LoginForm = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
@@ -19,7 +20,7 @@ const LoginForm = ({ setUser }) => {
                 'loggedBlogappUser', JSON.stringify(user)
             )
             blogService.setToken(user.token)
-            setUser(user)
+            dispatch(setCurrentUser(user))
             setUsername('')
             setPassword('')
             dispatch(setMessage(`${user.username} logged in`))
