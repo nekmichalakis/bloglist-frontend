@@ -12,13 +12,10 @@ const notificationSlice = createSlice({
         },
         setErrorMessage(state, action) {
             return {...state, errorMessage: action.payload}
-        },
-        clearNotification(state, action) {
-            return {message: '', errorMessage: ''}
         }
     }
 })
 
-export const { setMessage, setErrorMessage, clearNotification } = notificationSlice.actions
+export const { setMessage, setErrorMessage } = notificationSlice.actions
 
 export default notificationSlice.reducer
