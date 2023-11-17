@@ -1,11 +1,15 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { voteBlog, removeBlog } from '../reducers/blogReducer'
 
-const Blog = ({ user, blog, addLike, removeBlog }) => {
+const Blog = ({ user, blog }) => {
   const [visible, setVisible] = useState(false)
+
+  const dispatch = useDispatch()
 
   const clickLike = () => {
     const likedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
-    addLike(likedBlog)
+    dispatch(voteBlog(likedBlog))
   }
 
   return (
@@ -17,7 +21,7 @@ const Blog = ({ user, blog, addLike, removeBlog }) => {
         <div>likes {blog.likes} <button onClick={clickLike}>like</button></div>
         <div>{blog.user.username}</div>
         {(user.username === blog.user.username) &&
-          <button onClick={() => removeBlog(blog.id)}>remove</button>
+          <button onClick={() => dispatch(removeBlog(blog.id))}>remove</button>
         }
       </div>
     </div>
