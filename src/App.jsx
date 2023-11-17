@@ -4,18 +4,14 @@ import loginService from './services/login'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Toggleable from './components/Toggleable'
-import { useSelector, useDispatch } from 'react-redux'
-import { setMessage, setErrorMessage } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const message = useSelector(state => state.notification.message)
-  const errorMessage = useSelector(state => state.notification.errorMessage)
-
-  const dispatch = useDispatch()
+  const [message, setMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const blogFormRef = useRef()
 
@@ -39,9 +35,9 @@ const App = () => {
   if (message || errorMessage) {
     setTimeout(() => {
       message ?
-        dispatch(setMessage(''))
+        setMessage(null)
         :
-        dispatch(setErrorMessage(''))
+        setErrorMessage(null)
     }, 5000)
   }
 
@@ -60,15 +56,15 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      dispatch(setMessage(`${user.username} logged in`))
+      setMessage(`${user.username} logged in`)
     }
     catch (error) {
-      dispatch(setErrorMessage(error.response.data.error))
+      setErrorMessage(error.response.data.error)
     }
   }
 
   const handleLogout = () => {
-    dispatch(setMessage(`${user.username} logged out`))
+    setMessage(`${user.username} logged out`)
     setUser(null)
     window.localStorage.removeItem('loggedBlogappUser')
   }
@@ -79,10 +75,10 @@ const App = () => {
       let returnedBlog = await blogService.create(blogObject)
       returnedBlog.user = { id: returnedBlog.user, username: user.username }
       setBlogs(blogs.concat(returnedBlog))
-      dispatch(setMessage(`new blog ${returnedBlog.title} created by ${returnedBlog.author}`))
+      setMessage(`new blog ${returnedBlog.title} created by ${returnedBlog.author}`)
     }
     catch (error) {
-      dispatch(setErrorMessage(error.response.data.error))
+      setErrorMessage(error.response.data.error)
     }
   }
 
@@ -91,10 +87,10 @@ const App = () => {
       let returnedBlog = await blogService.update(blogObject.id, blogObject)
       returnedBlog.user = { id: returnedBlog.user, username: user.username }
       setBlogs(blogs.map(b => (b.id !== returnedBlog.id) ? b : returnedBlog))
-      dispatch(setMessage(`blog ${returnedBlog.title} liked by ${user.username}`))
+      setMessage(`blog ${returnedBlog.title} liked by ${user.username}`)
     }
     catch (error) {
-      dispatch(setErrorMessage(error.response.data.error))
+      setErrorMessage(error.response.data.error)
     }
   }
 
@@ -102,11 +98,11 @@ const App = () => {
     try {
       await blogService.remove(id)
       setBlogs(blogs.filter(b => b.id !== id))
-      dispatch(setMessage(`blog ${id} removed by ${user.username}`))
+      setMessage(`blog ${id} removed by ${user.username}`)
     }
     catch (error) {
       console.log('in catch')
-      dispatch(setErrorMessage(error.response.data.error))
+      setErrorMessage(error.response.data.error)
     }
   }
 
