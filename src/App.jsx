@@ -7,32 +7,31 @@ import Toggleable from './components/Toggleable'
 import Notification from './components/Notification'
 import { useSelector, useDispatch } from 'react-redux'
 import { setMessage, setErrorMessage } from './reducers/notificationReducer'
+import { setBlogs, appendBlog, deleteBlog, replaceBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const blogs = useSelector(state => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes) //try to put it in useSelector ?
+
   const dispatch = useDispatch()
-
   const blogFormRef = useRef()
-
-  const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
-
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
     }
+
+    blogService.getAll().then(res =>
+      dispatch(setBlogs(res))
+    )
   }, [])
 
   const handleLogin = async (event) => {
@@ -68,7 +67,7 @@ const App = () => {
       blogFormRef.current.toggleVisibility()
       let returnedBlog = await blogService.create(blogObject)
       returnedBlog.user = { id: returnedBlog.user, username: user.username }
-      setBlogs(blogs.concat(returnedBlog))
+      dispatch(appendBlog(returnedBlog))
       dispatch(setMessage(`new blog ${returnedBlog.title} created by ${returnedBlog.author}`))
     }
     catch (error) {
@@ -80,7 +79,7 @@ const App = () => {
     try {
       let returnedBlog = await blogService.update(blogObject.id, blogObject)
       returnedBlog.user = { id: returnedBlog.user, username: user.username }
-      setBlogs(blogs.map(b => (b.id !== returnedBlog.id) ? b : returnedBlog))
+      dispatch(replaceBlog(returnedBlog))
       dispatch(setMessage(`blog ${returnedBlog.title} liked by ${user.username}`))
     }
     catch (error) {
@@ -91,11 +90,10 @@ const App = () => {
   const removeBlog = async (id) => {
     try {
       await blogService.remove(id)
-      setBlogs(blogs.filter(b => b.id !== id))
+      dispatch(deleteBlog(id))
       dispatch(setMessage(`blog ${id} removed by ${user.username}`))
     }
     catch (error) {
-      console.log('in catch')
       dispatch(setErrorMessage(error.response.data.error))
     }
   }
