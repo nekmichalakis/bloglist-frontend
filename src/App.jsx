@@ -14,13 +14,12 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
-<<<<<<< HEAD
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes) //try to put it in useSelector ?
+  const [message, setMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const dispatch = useDispatch()
   const blogFormRef = useRef()
-=======
+
   const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
 
   useEffect(() => {
@@ -28,7 +27,6 @@ const App = () => {
       setBlogs(blogs)
     )
   }, [])
->>>>>>> parent of fa1c3ba (end to end testing)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -44,7 +42,16 @@ const App = () => {
     )
   }, [])
 
-  const handleLogin = async (event) =>{
+  if (message || errorMessage) {
+    setTimeout(() => {
+      message ?
+        setMessage(null)
+        :
+        setErrorMessage(null)
+    }, 5000)
+  }
+
+  const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
@@ -132,13 +139,9 @@ const App = () => {
   return (
     <div>
       <h2>{user ? 'blogs' : 'log in'}</h2>
-<<<<<<< HEAD
-      <Notification />
-=======
-      <div style={message ? {color: 'green'} : {color: 'red'}}>
+      <div style={message ? { color: 'green' } : { color: 'red' }} className='notification'>
         {message ? message : errorMessage}
       </div>
->>>>>>> parent of fa1c3ba (end to end testing)
       {!user && loginForm()}
       {user && <div>
         <p>{user.name} logged in</p>
