@@ -1,19 +1,23 @@
 import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { createBlog } from '../reducers/blogReducer'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
-const BlogForm = ({ inputBlog }) => {
+const BlogForm = () => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
 
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
     const addBlog = (event) => {
         event.preventDefault()
-        inputBlog({
-            title, author, url
-        })
+        dispatch(createBlog({ title, author, url }))
         setTitle('')
         setAuthor('')
         setUrl('')
+        navigate('/')
     }
 
     return (
@@ -45,10 +49,6 @@ const BlogForm = ({ inputBlog }) => {
             </form>
         </div>
     )
-}
-
-BlogForm.propTypes = {
-    inputBlog: PropTypes.func.isRequired
 }
 
 export default BlogForm

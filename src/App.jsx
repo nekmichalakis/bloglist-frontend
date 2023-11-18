@@ -1,23 +1,25 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import blogService from './services/blogs'
-import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
-import Toggleable from './components/Toggleable'
 import Notification from './components/Notification'
+import Menu from './components/Menu'
+import BlogList from './components/BlogList'
+import BlogView from './components/BlogView'
+import UserList from './components/UserList'
+import UserBlogs from './components/UserBlogs'
 import { useSelector, useDispatch } from 'react-redux'
 import { setMessage } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { initializeBlogs } from './reducers/blogReducer'
 import { removeCurrentUser, setCurrentUser } from './reducers/userReducer'
+import { initializeUsers } from './reducers/userReducer'
+import { Routes, Route } from 'react-router-dom'
+
 
 const App = () => {
-  const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.user.currentUser)
 
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes) //try to put it in useSelector ?
-
   const dispatch = useDispatch()
-  const blogFormRef = useRef()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -29,6 +31,7 @@ const App = () => {
     }
 
     dispatch(initializeBlogs())
+    dispatch(initializeUsers())
   }, [])
 
   const handleLogout = () => {
@@ -37,28 +40,27 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
-  const inputBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    dispatch(createBlog(blogObject))
+  if (!user) {
+      return  <LoginForm />
   }
 
   return (
     <div>
-      <h2>{user ? 'blogs' : 'log in'}</h2>
+      <Menu />
+      {user.username} logged in
+      <button onClick={handleLogout}>logout</button>
       <Notification />
-      {!user && <LoginForm />}
-      {user && 
-        <div>
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogout}>logout</button>
-          <Toggleable buttonLabel='create new blog' ref={blogFormRef}>
-            <BlogForm inputBlog={inputBlog} />
-          </Toggleable>
-          {sortedBlogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
-          )}
-        </div>
-      }
+      <h2>blog app</h2>
+
+      <Routes>
+        <Route path='/' element={<BlogList />} />
+        <Route path='/blogs' element={<BlogList />} />
+        <Route path='/blogs/:id' element={<BlogView />} />
+        <Route path='/createBlog' element={<BlogForm />} />
+        <Route path='/users' element={<UserList />} />
+        <Route path='/users/:id' element={<UserBlogs />} />
+      </Routes>
+
     </div>
   )
 }
