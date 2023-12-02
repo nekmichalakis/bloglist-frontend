@@ -4,8 +4,8 @@ const Menu = () => {
 
     return (
         <div>
-            <Link to={'/blogs'}>blogs</Link>
-            <Link to={'/users'}>users</Link>
+            <Link to={'/blogs'}>blogs </Link>
+            <Link to={'/users'}>users </Link>
         </div>
     )
 }

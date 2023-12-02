@@ -64,7 +64,20 @@ export const removeBlog = (id) => {
             dispatch(deleteBlog(id))
             dispatch(setMessage(`blog ${id} removed`))
         }
-    catch (error) {
+        catch (error) {
+            dispatch(setErrorMessage(error.response.data.error))
+        }
+    }
+}
+
+export const commentBlog = (id, comment) => {
+    return async (dispatch) => {
+        try {
+            let returnedBlog = await blogService.createComment(id, comment)
+            dispatch(replaceBlog(returnedBlog))
+            dispatch(setMessage(`comment ${comment} added`))
+        }
+        catch (error) {
             dispatch(setErrorMessage(error.response.data.error))
         }
     }
